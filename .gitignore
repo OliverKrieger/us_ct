@@ -1,0 +1,27 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.lock
+
+# TypeScript
+*.tsbuildinfo
+*.d.ts
+*.map
+
+# Build outputs
+dist/
+build/
+out/
+coverage/
+public/build/
+public/dist/
+
+# Nginx
+nginx/logs/
+nginx/conf.d/
+
+# IDEs and editors
+.idea/
+.vscode/
