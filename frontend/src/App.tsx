@@ -28,8 +28,10 @@ const App: React.FC = () => {
     const [tabs, setTabs] = useState<TabData[]>([]);
     const [activeTab, setActiveTab] = useState<string | null>(null);
 
+    const socketUrl = process.env.REACT_APP_WS_URL || `wss://${window.location.host}`;
+
     useEffect(() => {
-        socketRef.current = new WebSocket('ws://localhost/ws/');
+        socketRef.current = new WebSocket(socketUrl);
 
         socketRef.current.onopen = () => {
             console.log('Connected to WebSocket server');
@@ -39,9 +41,6 @@ const App: React.FC = () => {
             try {
                 const receivedData: TabData[] = JSON.parse(event.data);
                 setTabs(receivedData);
-                if (receivedData.length > 0) {
-                    setActiveTab(receivedData[0].region);
-                }
                 console.log("Data received from the Server: ", receivedData)
                 
             } catch (e) {
@@ -89,13 +88,15 @@ const App: React.FC = () => {
                     />
                 ))}
             </div>
-            <div className="tab-content">
-                <p>Status: {activeContent?.status}</p>
-                <p>Region: {activeContent?.region}</p>
-                <p>Roles: {activeContent?.roles}</p>
-                {activeContent?.strict ? <p>Strict: {activeContent?.strict}</p> : null}
-                {activeContent?.server_issue ? <p>Server Issue: {activeContent?.server_issue}</p> : null}
-            </div>
+            {activeContent ? 
+                <div className="tab-content">
+                    <p>Status: {activeContent?.status}</p>
+                    <p>Region: {activeContent?.region}</p>
+                    <p>Roles: {activeContent?.roles}</p>
+                    {activeContent?.strict ? <p>Strict: {activeContent?.strict}</p> : null}
+                    {activeContent?.server_issue ? <p>Server Issue: {activeContent?.server_issue}</p> : null}
+                </div> 
+            : <div></div>}
         </div>
     );
 };

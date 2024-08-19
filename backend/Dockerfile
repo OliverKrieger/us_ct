@@ -1,4 +1,4 @@
-FROM node:16-alpine
+FROM node:18-alpine
 
 WORKDIR /app
 
@@ -7,7 +7,5 @@ COPY src ./src
 
 RUN yarn install
 RUN yarn run build
-
-EXPOSE 8080
 
 CMD ["yarn", "start"]

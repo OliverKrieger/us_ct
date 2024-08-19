@@ -9,6 +9,7 @@ yarn-error.log*
 *.tsbuildinfo
 *.d.ts
 *.map
+.env
 
 # Build outputs
 dist/

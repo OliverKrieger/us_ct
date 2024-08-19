@@ -1,15 +1,19 @@
 import WebSocket, { Server } from 'ws';
 import axios from 'axios';
-import { IncomingMessage } from 'http';
+import express from 'express';
+import { IncomingMessage, createServer } from 'http';
 
 interface ServerWebSocket extends WebSocket {
     isAlive: boolean;
     clientURL: string;
 }
 
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 
-const wss = new Server({ port: PORT });
+const app = express();
+const server = createServer(app);
+const wss = new Server({ server });
+
 const clients: Set<ServerWebSocket> = new Set();
 
 let intervalId: NodeJS.Timeout | null = null;
@@ -43,8 +47,6 @@ async function fetchData(){
 // polling function
 const fetchDataAndBroadcast = async () => {
     try {
-        // const response = await axios.get('http://date.jsontest.com/');
-        // latestData = response.data;
         latestData = await fetchData();
 
         clients.forEach((client:ServerWebSocket) => {
@@ -79,7 +81,7 @@ const fetchDataAndBroadcast = async () => {
 // Function to start the polling interval
 const startPolling = () => {
     if (!intervalId) { // make sure another interval is not started!
-        intervalId = setInterval(fetchDataAndBroadcast, 10000);
+        intervalId = setInterval(fetchDataAndBroadcast, 3600000); // poll every hour
         console.log('Polling started');
     }
 };
@@ -141,4 +143,10 @@ process.on('SIGINT', () => {
     });
 });
 
-console.log(`WebSocket server is running on ws://localhost:${PORT}`);
+app.use(express.static('public'));
+
+server.listen({
+    port: PORT
+}, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
