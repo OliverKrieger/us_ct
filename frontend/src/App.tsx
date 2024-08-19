@@ -1,8 +1,32 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Tab from "./components/Tab";
+import './assets/styles.css';
+
+interface TabData {
+    status: string;
+    region: string;
+    roles: string[];
+    results: {
+        services: {
+            database: boolean;
+            redis: boolean;
+        },
+        stats:{
+            servers_count: number;
+            online: number,
+            session: number
+        }
+    };
+    strict: boolean;
+    server_issue: string | null;
+}
+
 
 const App: React.FC = () => {
-    const [response, setResponse] = useState<string>('');
     const socketRef = useRef<WebSocket | null>(null);
+    
+    const [tabs, setTabs] = useState<TabData[]>([]);
+    const [activeTab, setActiveTab] = useState<string | null>(null);
 
     useEffect(() => {
         socketRef.current = new WebSocket('ws://localhost/ws/');
@@ -12,7 +36,17 @@ const App: React.FC = () => {
         };
 
         socketRef.current.onmessage = (event: MessageEvent) => {
-            setResponse(event.data);
+            try {
+                const receivedData: TabData[] = JSON.parse(event.data);
+                setTabs(receivedData);
+                if (receivedData.length > 0) {
+                    setActiveTab(receivedData[0].region);
+                }
+                console.log("Data received from the Server: ", receivedData)
+                
+            } catch (e) {
+                console.error('Error parsing JSON:', e);
+            }
             handleSendRequest("alive");
         };
 
@@ -37,11 +71,31 @@ const App: React.FC = () => {
         }
     };
 
+    const handleTabClick = (id: string) => {
+        setActiveTab(id);
+    };
+    
+    const activeContent = tabs.find(tab => tab.region === activeTab);
+
     return (
         <div>
-            <h1>React Client</h1>
-            <h2>Response:</h2>
-            <pre>{response}</pre>
+            <div className="tabs">
+                {tabs.map(tab => (
+                    <Tab
+                        key={tab.region}
+                        tab={tab}
+                        isActive={tab.region === activeTab}
+                        onClick={handleTabClick}
+                    />
+                ))}
+            </div>
+            <div className="tab-content">
+                <p>Status: {activeContent?.status}</p>
+                <p>Region: {activeContent?.region}</p>
+                <p>Roles: {activeContent?.roles}</p>
+                {activeContent?.strict ? <p>Strict: {activeContent?.strict}</p> : null}
+                {activeContent?.server_issue ? <p>Server Issue: {activeContent?.server_issue}</p> : null}
+            </div>
         </div>
     );
 };

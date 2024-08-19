@@ -17,9 +17,12 @@ let latestData: any = null; // Cache for the latest data
 
 // Define the endpoints to fetch data from
 const endpoints = [
-    'http://date.jsontest.com/',
-    'http://validate.jsontest.com/?json=%5BJSON-code-to-validate%5D',
-    'http://md5.jsontest.com/?text=%5Btext'
+    "https://data--us-east.upscope.io/status?stats=1",
+    "https://data--eu-west.upscope.io/status?stats=1",
+    "https://data--eu-central.upscope.io/status?stats=1",
+    "https://data--us-west.upscope.io/status?stats=1",
+    "https://data--sa-east.upscope.io/status?stats=1",
+    "https://data--ap-southeast.upscope.io/status?stats=1"
 ];
 
 async function fetchData(){
