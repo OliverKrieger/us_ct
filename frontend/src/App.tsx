@@ -28,6 +28,8 @@ const App: React.FC = () => {
     const [tabs, setTabs] = useState<TabData[]>([]);
     const [activeTab, setActiveTab] = useState<string | null>(null);
 
+    const [error, setError] = useState<string | null>(null);
+
     const socketUrl = process.env.REACT_APP_WS_URL || `wss://${window.location.host}`;
 
     useEffect(() => {
@@ -41,15 +43,19 @@ const App: React.FC = () => {
             try {
                 const receivedData: TabData[] = JSON.parse(event.data);
                 setTabs(receivedData);
-                console.log("Data received from the Server: ", receivedData)
-                
+                if(error){
+                    setError(null)
+                }
+                const timestamp = new Date().toLocaleString();
+                console.log(timestamp, "Data received from the Server:", receivedData)
             } catch (e) {
+                setError(JSON.stringify(e))
                 console.error('Error parsing JSON:', e);
             }
             handleSendRequest("alive");
         };
 
-        socketRef.current.onerror = (error) => {
+        socketRef.current.onerror = (error:Event) => {
             console.error('WebSocket error:', error);
         };
 
@@ -78,25 +84,31 @@ const App: React.FC = () => {
 
     return (
         <div>
-            <div className="tabs">
-                {tabs.map(tab => (
-                    <Tab
-                        key={tab.region}
-                        tab={tab}
-                        isActive={tab.region === activeTab}
-                        onClick={handleTabClick}
-                    />
-                ))}
-            </div>
-            {activeContent ? 
-                <div className="tab-content">
-                    <p>Status: {activeContent?.status}</p>
-                    <p>Region: {activeContent?.region}</p>
-                    <p>Roles: {activeContent?.roles}</p>
-                    {activeContent?.strict ? <p>Strict: {activeContent?.strict}</p> : null}
-                    {activeContent?.server_issue ? <p>Server Issue: {activeContent?.server_issue}</p> : null}
-                </div> 
-            : <div></div>}
+            {error ? (
+                <div className="error">Error: {error}</div>
+            ) : (
+                <div className="dashboard">
+                    <div className="tabs">
+                        {tabs.map(tab => (
+                            <Tab
+                                key={tab.region}
+                                tab={tab}
+                                isActive={tab.region === activeTab}
+                                onClick={handleTabClick}
+                            />
+                        ))}
+                    </div>
+                    {activeContent ? 
+                        <div className="tab-content">
+                            <p>Status: {activeContent?.status}</p>
+                            <p>Region: {activeContent?.region}</p>
+                            <p>Roles: {activeContent?.roles}</p>
+                            {activeContent?.strict ? <p>Strict: {activeContent?.strict}</p> : null}
+                            {activeContent?.server_issue ? <p>Server Issue: {activeContent?.server_issue}</p> : null}
+                        </div> 
+                    : <div></div>}
+                </div>
+            )}
         </div>
     );
 };

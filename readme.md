@@ -38,3 +38,9 @@ To run the frontend:
 
 - Start frontned:
 `yarn start`
+
+# Environment variables
+
+## Client
+
+- REACT_APP_WS_URL => Where the client will find the websocket, for the compose setup should be set to ws://localhost:8081/ locally
