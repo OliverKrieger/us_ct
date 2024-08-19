@@ -81,7 +81,7 @@ const fetchDataAndBroadcast = async () => {
 // Function to start the polling interval
 const startPolling = () => {
     if (!intervalId) { // make sure another interval is not started!
-        intervalId = setInterval(fetchDataAndBroadcast, 3600000); // poll every hour
+        intervalId = setInterval(fetchDataAndBroadcast, 60000); // poll every minute
         console.log('Polling started');
     }
 };

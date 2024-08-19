@@ -1,9 +1,15 @@
 # Installation
 
+Web URL: ctfrontend-production.up.railway.app
+
+# Installation
+
 ## Docker installation
 
 Please find docker documentation for setting up docker for your desired operating system:
 https://docs.docker.com/engine/install/
+
+## Docker Locally:
 
 Once you have docker running, the following commands can be used to run the project:
 
