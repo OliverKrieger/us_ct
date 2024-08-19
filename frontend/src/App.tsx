@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 const App: React.FC = () => {
-    const [url, setUrl] = useState<string>('');
     const [response, setResponse] = useState<string>('');
     const socketRef = useRef<WebSocket | null>(null);
 
@@ -14,6 +13,7 @@ const App: React.FC = () => {
 
         socketRef.current.onmessage = (event: MessageEvent) => {
             setResponse(event.data);
+            handleSendRequest("alive");
         };
 
         socketRef.current.onerror = (error) => {
@@ -31,22 +31,15 @@ const App: React.FC = () => {
         };
     }, []);
 
-    const handleSendRequest = () => {
+    const handleSendRequest = (msg:string) => {
         if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
-            socketRef.current.send(url);
+            socketRef.current.send(msg);
         }
     };
 
     return (
         <div>
             <h1>React Client</h1>
-            <input
-                type="text"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="Enter URL"
-            />
-            <button onClick={handleSendRequest}>Send Request</button>
             <h2>Response:</h2>
             <pre>{response}</pre>
         </div>
