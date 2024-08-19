@@ -15,11 +15,34 @@ const clients: Set<ServerWebSocket> = new Set();
 let intervalId: NodeJS.Timeout | null = null;
 let latestData: any = null; // Cache for the latest data
 
+// Define the endpoints to fetch data from
+const endpoints = [
+    'http://date.jsontest.com/',
+    'http://validate.jsontest.com/?json=%5BJSON-code-to-validate%5D',
+    'http://md5.jsontest.com/?text=%5Btext'
+];
+
+async function fetchData(){
+    try {
+        const requests = endpoints.map(endpoint => axios.get(endpoint));
+        const responses = await Promise.all(requests);
+        
+        // Bundle the JSON data together
+        const bundledData = responses.map(response => response.data);
+        
+        return bundledData;
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        return { error: 'Failed to fetch data' };
+    }
+}
+
 // polling function
 const fetchDataAndBroadcast = async () => {
     try {
-        const response = await axios.get('http://date.jsontest.com/');
-        latestData = response.data;
+        // const response = await axios.get('http://date.jsontest.com/');
+        // latestData = response.data;
+        latestData = await fetchData();
 
         clients.forEach((client:ServerWebSocket) => {
             // if the client is no longer alive, delete it from the list
