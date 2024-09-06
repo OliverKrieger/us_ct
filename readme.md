@@ -44,3 +44,12 @@ To run the frontend:
 ## Client
 
 - REACT_APP_WS_URL => Where the client will find the websocket, for the compose setup should be set to ws://localhost:8081/ locally
+
+# Railway Setup
+
+- On railway, create an empty project
+- Right click in the empty areas and select "Empty Service" (can also use the Create buttom at top right if all menus closed)
+- Make two of them, name one ct_backend and one ct_frontned (for coding test backend and coding test frontend)
+- Click on backend and go to settings and generate a domain on port 8080
+- Then click on frontned and under Variables add a variables called `REACT_APP_WS_URL` (where the server will be) with the value set as the link to the backend with `wss://` in front (for websockets). For instance `wss://ctbackend-production.up.railway.app`
+- Then generate a domain on port 8080 for frontend as well (because they are served from the same port, could be served from different ones)
